@@ -6,4 +6,5 @@ public interface IAssetNotificationQueueRepository
 {
     void SaveNotificationContent(string content);
     AssetNotificationQueueModel GetLastNotificationContent();
+    AssetNotificationQueueModel GetNotificationContentById(int id);
 }

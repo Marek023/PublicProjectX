@@ -9,7 +9,6 @@ using MarketIndexAnalyzer.Services.IndexServices.Implementations;
 using MarketIndexAnalyzer.Services.IndexServices.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using ProjectX.Data.Contexts;
 using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);

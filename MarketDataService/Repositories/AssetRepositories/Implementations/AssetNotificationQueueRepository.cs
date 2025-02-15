@@ -34,4 +34,10 @@ public class AssetNotificationQueueRepository : IAssetNotificationQueueRepositor
             .FirstOrDefault()?
             .ToModel() ?? throw new NullReferenceException("Asset notification queue not found");
     }
+
+    public AssetNotificationQueueModel GetNotificationContentById(int id)
+    {
+        return _dbContext.AssetNotificationQueue.FirstOrDefault(notificationQueue => notificationQueue.Id == id)?
+            .ToModel() ?? throw new NullReferenceException("Asset notification queue not found");
+    }
 }

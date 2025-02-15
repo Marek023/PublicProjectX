@@ -5,6 +5,8 @@ using MarketDataService.Repositories.AssetRepositories.Interfaces;
 using MarketDataService.Repositories.UserRepositories.Interfaces;
 using MarketDataService.Services.HTMLTemplateServices.Interfaces;
 using MarketDataService.Services.NotificationServices.Interfaces;
+using Microsoft.Extensions.Options;
+using ProjectX.Models.Options;
 using ProjectX.Services.EmailService.Interface;
 
 namespace MarketDataService.Services.NotificationServices.Implemenetations;
@@ -14,14 +16,17 @@ public class NotificationChangedAssetsService : INotificationChangedAssetsServic
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IHtmlTemplateService _htmlTemplateService;
     private readonly IEmailService _emailService;
+    private readonly EmailOptions _emailOptions;
 
     public NotificationChangedAssetsService(IServiceScopeFactory serviceScopeFactory,
         IHtmlTemplateService htmlTemplateService,
-        IEmailService emailService)
+        IEmailService emailService,
+        IOptions<EmailOptions> emailOptions)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _htmlTemplateService = htmlTemplateService;
         _emailService = emailService;
+        _emailOptions = emailOptions.Value;
     }
 
     public async Task SendMailWithChangedAssetsAsync()
@@ -37,9 +42,11 @@ public class NotificationChangedAssetsService : INotificationChangedAssetsServic
             var lastRecord = GetLastRecordFromNotificationQueue();
 
             CreatingRelationUserAndNotification(usersSubscribed, lastRecord);
-            
+
             await SendEmailsAsync(lastRecord);
         }
+
+        await CheckingSentEmailsAsync();
     }
 
     private ChangesInAssetsModel CheckingChangesInAssets()
@@ -68,39 +75,17 @@ public class NotificationChangedAssetsService : INotificationChangedAssetsServic
         return changedInAssetModel;
     }
 
-
-    // private string GetChangedAssets()
-    // {
-    //     using (var scope = _serviceScopeFactory.CreateScope())
-    //     {
-    //         var newAssetRepository = scope.ServiceProvider.GetService<NewAssetRepository>();
-    //         var excludedAssetRepository = scope.ServiceProvider.GetService<ExcludedAssetRepository>();
-    //
-    //         if (newAssetRepository is null || excludedAssetRepository is null)
-    //         {
-    //             throw new NullReferenceException("newAssetRepository or excludedAssetRepository is null");
-    //         }
-    //
-    //         var newAssets = newAssetRepository.GetNewAssets();
-    //         var excludedAssets = excludedAssetRepository.GetExcludedAssets();
-    //
-    //         var htmlTamplate = GetHtmlTemplate(newAssets, excludedAssets);
-    //
-    //         return htmlTamplate;
-    //     }
-    // }
-
     private string GetHtmlTemplate(List<AssetModel> newAssets, List<AssetModel> excludedAssets)
     {
         var editHtmlTemplate = string.Empty;
         switch ((newAssets.Any(), excludedAssets.Any()))
         {
             case (true, true):
-                var newAndExcludedhtmlTemplate = _htmlTemplateService.GetNewAndExcludedAssetHtmlTemplate();
+                var newAndExcludedHtmlTemplate = _htmlTemplateService.GetNewAndExcludedAssetHtmlTemplate();
                 editHtmlTemplate = SetNewAndExcludedDataToHtmlTemplate(
                     newAssets,
                     excludedAssets,
-                    newAndExcludedhtmlTemplate);
+                    newAndExcludedHtmlTemplate);
                 break;
 
             case (true, false):
@@ -220,7 +205,7 @@ public class NotificationChangedAssetsService : INotificationChangedAssetsServic
                 var userSettingAssetNotificationQueueRepository =
                     scope.ServiceProvider.GetService<IUserSettingAssetNotificationQueueRepository>()
                     ?? throw new NullReferenceException("userSettingAssetNotificationQueueRepository is null");
-                
+
 
                 userSettingAssetNotificationQueueRepository.CreateRelation(userSubscribed.Id, lastRecord.Id);
             }
@@ -234,16 +219,18 @@ public class NotificationChangedAssetsService : INotificationChangedAssetsServic
         string subject = "Změna v aktivech";
         foreach (var relation in relations)
         {
-
-            if (await _emailService.SendEmailAsync(relation.UserEmail, subject, lastRecord.NotificationContent))
+            if(relation.AssetNotificationQueueId != lastRecord.Id)
+                continue;
+            
+            if (await _emailService.SendEmailAsync(relation.UserEmail, subject, lastRecord.NotificationContent, _emailOptions))
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var userSettingAssetNotificationQueueRepository =
                         scope.ServiceProvider.GetService<IUserSettingAssetNotificationQueueRepository>()
                         ?? throw new NullReferenceException("userSettingAssetNotificationQueueRepository is null");
-                    
-                    userSettingAssetNotificationQueueRepository.SetRelation(relation.Id); 
+
+                    userSettingAssetNotificationQueueRepository.SetRelation(relation.Id);
                 }
             }
             else
@@ -262,6 +249,34 @@ public class NotificationChangedAssetsService : INotificationChangedAssetsServic
                 ?? throw new NullReferenceException("userSettingAssetNotificationQueueRepository is null");
 
             return userSettingAssetNotificationQueueRepository.GetRelations();
+        }
+    }
+
+    private async Task CheckingSentEmailsAsync()
+    {
+        var unsentEmails = GetRelations();
+        if (!unsentEmails.Any()) return;
+
+        var distinctUnsentEmails =
+            unsentEmails.DistinctBy(notificationQueue => notificationQueue.AssetNotificationQueueId)
+                .ToList();
+        
+        foreach (var unsentEmail in distinctUnsentEmails)
+        {
+            var assetNotificationQueueModel = GetAssetNotificationQueueModelById(unsentEmail.AssetNotificationQueueId);
+            await SendEmailsAsync(assetNotificationQueueModel);
+        }
+    }
+
+    private AssetNotificationQueueModel GetAssetNotificationQueueModelById(int id)
+    {
+        using (var scope = _serviceScopeFactory.CreateScope())
+        {
+            var assetNotificationQueueRepository = scope.ServiceProvider.GetService<IAssetNotificationQueueRepository>()
+                                                   ?? throw new NullReferenceException(
+                                                       "Asset notification queue repository is null");
+
+            return assetNotificationQueueRepository.GetNotificationContentById(id);
         }
     }
 }

@@ -14,6 +14,7 @@ using MarketDataService.Services.NotificationServices.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using ProjectX.Data.Contexts;
+using ProjectX.Models.Options;
 using ProjectX.Services.EmailService.Implementation;
 using ProjectX.Services.EmailService.Interface;
 using Quartz;
@@ -30,11 +31,17 @@ builder.Configuration
 builder.Services.AddOptions<ConnectionSettings>()
     .BindConfiguration(nameof(ConnectionSettings))
     .ValidateDataAnnotations();
+
 builder.Services.AddOptions<MarketDataService.Models.AppSettings.Quartz>()
     .BindConfiguration(nameof(MarketDataService.Models.AppSettings.Quartz))
     .ValidateDataAnnotations();
+
 builder.Services.AddOptions<ApiSettings>()
     .BindConfiguration(nameof(ApiSettings))
+    .ValidateDataAnnotations();
+
+builder.Services.AddOptions<EmailOptions>()
+    .BindConfiguration(nameof(EmailOptions))
     .ValidateDataAnnotations();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
