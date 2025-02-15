@@ -1,0 +1,4 @@
+**/appsettings.secrets.json
+*.log
+/logs/
+Log-*.*

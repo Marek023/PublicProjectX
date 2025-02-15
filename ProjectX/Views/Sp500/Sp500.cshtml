@@ -1,0 +1,144 @@
+﻿@model List<ProjectX.Models.Assets.AssetMarketDataModel>
+
+<div style="text-align: center">
+    <div class="header-container text-center">
+        <div class="header-section">
+            
+        </div>
+        <div class="header-section">
+            <h1 class="header-title">S&P 500</h1>
+        </div>
+        
+        <div class="header-section" style="display: flex; justify-content: flex-end">
+            <div class="search-container" >
+                <input type="text" id="searchInput" placeholder="Vyhledat v tabulce">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+    </div>
+    
+    <table id="sp500Table" class="table table-bordered table-striped table-hover" style="text-align: center">
+        <thead >
+        <tr>
+            <th data-sort="name" class="sortable-header">Název</th>
+            <th data-sort="symbol" class="sortable-header">Symbol</th>
+            <th data-sort="change-top" class="sortable-header">Změna od nejvyššího bodu</th>
+            <th data-sort="change-week" class="sortable-header">Změna za týden</th>
+            <th data-sort="change-day" class="sortable-header">Změna za den</th>
+        </tr>
+        </thead>
+        <tbody>
+            @foreach (var marketData in Model)
+            {
+                <tr>
+                    <td>@marketData.Name</td>
+                    <td>@marketData.Symbol</td>
+                    @if (marketData.CurrentChangeFromTop.StartsWith("-"))
+                    {
+                        <td style="color: rgb(204, 65, 107); font-weight: bold ">@marketData.CurrentChangeFromTop</td>
+                    }
+                    else
+                    {
+                        <td style="color: rgb(64, 186, 100); font-weight: bold ">@marketData.CurrentChangeFromTop</td>
+                    }
+                    @if (marketData.ChangePerWeek.StartsWith("-"))
+                    {
+                        <td style="color: rgb(204, 65, 107); font-weight: bold ">@marketData.ChangePerWeek</td>
+                    }
+                    else
+                    {
+                        <td style="color: rgb(64, 186, 100); font-weight: bold ">@marketData.ChangePerWeek</td>
+                    }
+                    @if (marketData.ChangePerDay.StartsWith("-"))
+                    {
+                        <td style="color: rgb(204, 65, 107); font-weight: bold ">@marketData.ChangePerDay</td>
+                    }
+                    else
+                    {
+                        <td style="color: rgb(64, 186, 100); font-weight: bold ">@marketData.ChangePerDay</td>
+                    }
+                </tr>
+                
+            }
+        </tbody>
+    </table>
+    
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const table = document.getElementById('sp500Table');
+        const headers = table.querySelectorAll('.sortable-header');
+        const searchInput = document.getElementById('searchInput');
+
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const sortKey = header.getAttribute('data-sort');
+                const isCurrentlySortedAsc = header.classList.contains('sorted-asc');
+
+                headers.forEach(h => {
+                    h.classList.remove('sorted-asc', 'sorted-desc');
+                });
+
+                if (isCurrentlySortedAsc) {
+                    header.classList.add('sorted-desc');
+                } else {
+                    header.classList.add('sorted-asc');
+                }
+
+                sortTable(table, sortKey, !isCurrentlySortedAsc);
+            });
+        });
+
+        searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = table.getElementsByTagName('tbody')[0].rows;
+
+            for (let row of rows) {
+                let visible = false;
+                for (let cell of row.cells) {
+                    if (cell.textContent.toLowerCase().includes(filter)) {
+                        visible = true;
+                        break;
+                    }
+                }
+                row.style.display = visible ? '' : 'none';
+            }
+        });
+
+        function sortTable(table, sortKey, ascending) {
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.rows);
+            const multiplier = ascending ? 1 : -1;
+
+            rows.sort((a, b) => {
+                let aValue, bValue;
+                switch(sortKey) {
+                    case 'name':
+                        aValue = a.cells[0].textContent;
+                        bValue = b.cells[0].textContent;
+                        return aValue.localeCompare(bValue) * multiplier;
+                    case 'symbol':
+                        aValue = a.cells[1].textContent;
+                        bValue = b.cells[1].textContent;
+                        return aValue.localeCompare(bValue) * multiplier;
+                    case 'change-top':
+                        aValue = parseFloat(a.cells[2].textContent);
+                        bValue = parseFloat(b.cells[2].textContent);
+                        return (aValue - bValue) * multiplier;
+                    case 'change-week':
+                        aValue = parseFloat(a.cells[3].textContent);
+                        bValue = parseFloat(b.cells[3].textContent);
+                        return (aValue - bValue) * multiplier;
+                    case 'change-day':
+                        aValue = parseFloat(a.cells[4].textContent);
+                        bValue = parseFloat(b.cells[4].textContent);
+                        return (aValue - bValue) * multiplier;
+                }
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    });
+</script>
+

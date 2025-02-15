@@ -1,0 +1,146 @@
+﻿@model ProjectX.Models.Statistic.StatisticModel
+
+<div style="text-align: center">
+    <h1 class="header-title">Statistiky</h1>
+</div>
+
+<div style="text-align: center">
+    <div class="header-container text-center mt-2 mb-2">
+        <div class="header-section">
+        </div>
+
+        <div >
+            <button type="button" class="btn btn-success" style="background-color: rgb(60, 185, 97); 
+                border-color: rgb(60, 185, 97);" data-bs-toggle="modal" data-bs-target="#importModal">
+                Importovat data
+            </button>
+        </div>
+
+        <div class="header-section" style="display: flex; justify-content: flex-end">
+            <div class="year-selector">
+                <input
+                    type="number"
+                    id="yearInput"
+                    min="2025"
+                    max="2100"
+                    value="2024"
+                    placeholder="Vyberte rok"
+                >
+                <span class="calendar-icon">📅</span>
+            </div>
+        </div>
+    </div>
+
+    <script> 
+        const currentYear = new Date().getFullYear();
+
+        const yearInput = document.getElementById('yearInput');
+        yearInput.max = 2030;
+        yearInput.value = currentYear;
+    </script> 
+    
+    <table id="statisticTable" class="table table-bordered table-striped table-hover" style="text-align: center">
+        <thead >
+        <tr>
+            <th data-sort="name" class="sortable-header">Měsíc</th>
+            <th data-sort="symbol" class="sortable-header">Celkový vklad</th>
+            <th data-sort="change-top" class="sortable-header">Zisk</th>
+            <th data-sort="change-week" class="sortable-header">Dividendy</th>
+            <th data-sort="change-day" class="sortable-header">Celkový zisk v procentech</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (!Model.YearStatisticModels.Any())
+        {
+            <tr>
+                <td colspan="5" style="font-weight: bold">Váš účet neobsahuje žádné statistiky</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var yearStatistic in Model.YearStatisticModels)
+            {
+                <tr>
+                    <td>@yearStatistic.MonthName</td>
+                    <td>@yearStatistic.TotalDeposit</td>
+                    <td style="color: @(yearStatistic.Profit < 0 ? "rgb(204, 65, 107)" : "rgb(64, 186, 100)"); font-weight: bold">
+                        @yearStatistic.Profit
+                    </td>
+                    <td style="color: @(yearStatistic.Dividend > 0 ? "rgb(64, 186, 100)" : "inherit"); font-weight: bold">
+                        @yearStatistic.Dividend
+                    </td>
+                    <td style="color: @(yearStatistic.PofitInPercent.StartsWith("-") ? "rgb(204, 65, 107)" : "rgb(64, 186, 100)"); font-weight: bold">
+                        @yearStatistic.PofitInPercent
+                    </td>
+                </tr>
+            }
+
+            var totalYearStatistic = Model.YearStatisticModels[0].TotalYearStatisticModel;
+
+            <tr style="background: rgb(29, 33, 47); color: white; font-weight: bold">
+                <td>Celkem</td>
+                <td>@totalYearStatistic.TotalDeposit</td>
+                <td style="color: @(totalYearStatistic.TotalProfitForYear < 0 ? "rgb(204, 65, 107)" : "rgb(64, 186, 100)"); font-weight: bold">
+                    @totalYearStatistic.TotalProfitForYear
+                </td>
+                <td style="color: @(totalYearStatistic.TotalDivident > 0 ? "rgb(64, 186, 100)" : "inherit"); font-weight: bold">
+                    @totalYearStatistic.TotalDivident
+                </td>
+                <td style="color: @(totalYearStatistic.ProfitInPercentForYear.StartsWith("-") ? "rgb(204, 65, 107)" : "rgb(64, 186, 100)"); font-weight: bold">
+                    @totalYearStatistic.ProfitInPercentForYear
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+</div>
+
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: rgb(246, 247, 249);">
+                <h5 class="modal-title" id="importModalLabel" style="margin: 0 auto; color: rgb(29, 33, 47)">Importovat CSV soubory</h5>
+            </div>
+            <div class="modal-body">
+                <form id="importForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="nonTradingAmount" class="form-label">Částka se kterou se neobchoduje:</label>
+                        <input type="text" class="form-control" id="nonTradingAmount" name="nonTradingAmount" placeholder="Zadejte částku">
+                    </div>
+                    <div class="mb-3">
+                        <label for="depositHistory" class="form-label">Vyberte CSV s vklady:</label>
+                        <input type="file" class="form-control" id="depositHistory" name="depositHistory" accept=".csv">
+                    </div>
+                    <div class="mb-3">
+                        <label for="accountHistory" class="form-label">Vyberte CSV s historií účtu:</label>
+                        <input type="file" class="form-control" id="accountHistory" name="accountHistory" accept=".csv">
+                    </div>
+                    <div class="mb-3">
+                        <label for="dividendHistory" class="form-label">Vyberte CSV s dividendy:</label>
+                        <input type="file" class="form-control" id="dividendHistory" name="dividendHistory" accept=".csv">
+                    </div>
+
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary" style="background-color: rgb(60, 185, 97); border-color: rgb(60, 185, 97);" onclick="uploadFiles_onClick()">Uložit</button>
+                        <button style="background-color: rgb(29, 33, 47); border-color: rgb(29, 33, 47);" type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Zavřít">Zavřít</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById("depositHistory").addEventListener("change", function () {
+        this.classList.remove("is-invalid");
+    });
+    document.getElementById("accountHistory").addEventListener("change", function () {
+        this.classList.remove("is-invalid");
+    });
+    document.getElementById("dividendHistory").addEventListener("change", function () {
+        this.classList.remove("is-invalid");
+    });
+</script>
+

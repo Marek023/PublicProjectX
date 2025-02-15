@@ -1,0 +1,92 @@
+﻿@* <script src="~/js/bootstrap.min.js"></script> *@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ProjectX</title>
+
+    @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    když je odkomentovane píše chybu při zapnutí a jinak nejdou toastry *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
+    
+    @* <script src="~/lib/toastr/toastr.min.js"></script> *@
+    @* <link rel="stylesheet" href="~/lib/toastr/toastr.min.css"> *@
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/ProjectX.css" asp-append-version="true"/>
+
+    <script src="~/js/Statistic/ImportCsv.js" asp-append-version="true"></script>
+
+
+
+
+
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-sm border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+            <!-- Logo vlevo -->
+            <a class="navbar-brand pb-3" asp-area="" asp-controller="Home" asp-action="Index" style="font-size: 25px">ProjectX</a>
+
+            <!-- Tlačítko pro sbalení menu na mobilních zařízeních -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigační odkazy zarovnané na střed -->
+            <div class="collapse pb-3 navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav gap-4">
+                    <li class="nav-item" style="font-size: 20px">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "GetSp500View" ? "active" : "")"
+                           asp-area=""
+                           asp-controller="Sp500" 
+                           asp-action="GetSp500View">S&P 500</a>
+                    </li>
+                    <li class="nav-item" style="font-size: 20px">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "GetNasdaqView" ? "active" : "")"
+                           asp-area=""
+                           asp-controller="Nasdaq"
+                           asp-action="GetNasdaqView">Nasdaq 100</a>
+                    </li>
+                    <li class="nav-item" style="font-size: 20px">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "GetDowJonesView" ? "active" : "")"
+                           asp-area=""
+                           asp-controller="DowJones"
+                           asp-action="GetDowJonesView">Dow Jones</a>
+                    </li>
+                    <li class="nav-item" style="font-size: 20px">
+                        <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "GetStatisticView" ? "active" : "")"
+                           asp-area=""
+                           asp-controller="Statistic"
+                           asp-action="GetStatisticView">Statistiky</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer>
+    <p>&copy; 2025 ProjectX. Všechna práva vyhrazena.</p>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,203 @@
+﻿/* Pozadí celé stránky */
+body {
+    background-color: rgb(246, 247, 249);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+}
+
+/* Navigační lišta */
+.navbar {
+    background-color: rgb(29, 33, 47);
+    height: 80px; /* nastavení výšky hlavičky */
+    display: flex;
+    align-items: center; /* zarovnání obsahu na střed vertikálně */
+    justify-content: space-between;
+}
+
+.navbar-collapse {
+    position: absolute; /* absolutní pozicování */
+    top: 50%; /* umístí do středu vertikálně */
+    left: 50%; /* umístí do středu horizontálně */
+    transform: translate(-50%, -50%); /* přesné centrování */
+    display: flex; /* nastaví odkazy do řady */
+    gap: 1rem; /* mezera mezi odkazy */
+}
+/* Logo (ProjectX) bílé */
+.navbar-brand {
+    color: white !important;
+    font-size: 1.25rem; /* zvětšení loga */
+}
+
+/* Navigační odkazy */
+/*.navbar-nav .nav-link {*/
+/*    color: rgb(191, 191, 189);*/
+/*    text-decoration: none;*/
+/*    font-size: 1rem;*/
+/*}*/
+
+.navbar-nav .nav-link {
+    color: rgb(191, 191, 189);
+    position: relative;
+    padding-bottom: 1px; /* prostor mezi textem a podtržením */
+}
+
+.navbar-nav .nav-link:hover {
+    color: white;
+}
+
+.navbar-nav .nav-link.active {
+    color: white;
+    position: relative;
+}
+
+.navbar-nav .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    height: 2px;
+    background-color: white;
+}
+
+/* Mezera mezi odkazy */
+.navbar-nav.gap-4 > .nav-item {
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+
+main {
+    flex: 1; /* zabere zbylý prostor mezi hlavičkou a patičkou */
+}
+
+/* Patička */
+footer {
+    background-color: rgb(29, 33, 47);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* přidáno */
+    width: 100%;
+}
+
+footer p {
+    margin: 0; /* odstraní výchozí margin */
+    line-height: normal; /* resetuje line-height */
+}
+
+.container {
+    flex: 1 0 auto; /* přidáno */
+}
+
+:root {
+    --bs-table-bg: rgb(29, 33, 47); /* Nastavení pozadí tabulky */
+    --bs-table-color: white; /* Nastavení barvy textu */
+}
+
+table thead {
+    background-color: var(--bs-table-bg) !important;
+    color: var(--bs-table-color) !important;
+}
+
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+}
+.header-section {
+    width: 33.33%;
+    display: flex;
+    align-items: center;
+}
+.header-title {
+    margin: 0 auto;
+}
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 47%;
+
+}
+.search-icon {
+    position: absolute;
+    right: 7px;
+    color: #888;
+    margin-bottom: 10px;
+}
+#searchInput {
+    width: 250px;
+    padding: 8px 30px 8px 8px;
+}
+.sortable-header {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+.sortable-header::after {
+    content: '⇅';
+    margin-left: 5px;
+    color: white;
+    font-weight: normal;
+}
+.sorted-asc::after {
+    content: '▲';
+    font-weight: normal;
+    font-size: 15px ;
+}
+.sorted-desc::after {
+    content: '▼';
+    font-weight: normal;
+    font-size: 15px ;
+}
+#searchInput {
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 8px;
+}
+
+/*červený rámeček kolem prázdného inputu */
+.is-invalid {
+    border: 2px solid red;
+}
+
+/*Kalendář ve statistikách*/
+.year-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.year-selector input {
+    padding: 8px 35px 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 120px;
+    height: 38px;
+}
+
+.calendar-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/*barvy toastru*/
+.toast-success {
+    background-color: rgb(60, 185, 97) !important;
+}
+
+.toast-error {
+    background-color: rgb(204, 65, 107) !important;
+}
