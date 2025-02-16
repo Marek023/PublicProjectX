@@ -45,8 +45,11 @@ public class NotificationChangedAssetsService : INotificationChangedAssetsServic
 
             await SendEmailsAsync(lastRecord);
         }
+        else
+        {
+            await CheckingSentEmailsAsync();
+        }
 
-        await CheckingSentEmailsAsync();
     }
 
     private ChangesInAssetsModel CheckingChangesInAssets()
