@@ -50,6 +50,7 @@ Následně se vytvoří záznam ve vazební tabulce mezi **AssetNotificationQueu
 - ---------------------------------
 
 ### ProjectX
+- Je napsaný pomocí třívrstvé architektury.
 - Záložky S&P 500, Nasdaq 100 a Dow Jones fungují stejně, liší se pouze zobrazovanými daty, která lze libovolně řadit a vyhledávat.
 - Záložka Statistiky vznikla, protože na platformě XTB, kde obchoduji, nejsou statistiky přehledně zpracované, chybí například možnost zobrazit procentuální zhodnocení za měsíc nebo rok. Zobrazení dat v tabulce je již dokončeno, ale import dat zatím není hotový.
 - V ProjectuX ve složce Services se nachází kalkulačky rozdělené do tří typů:
