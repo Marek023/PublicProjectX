@@ -51,7 +51,6 @@ public class StatisticController : Controller
         }
 
         _importCsvService.SaveAccountHistoryCsv(accountHistory, dividendHistory, depositHistory, nonTradingAmount);
-        // Zpracování souborů a nonTradingAmount
         Console.WriteLine($"Neobchodovaná částka: {nonTradingAmount}");
 
         return Ok();
