@@ -24,7 +24,7 @@ public class Sp500Controller : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in Sp500");
+            _logger.LogError(ex, "Error in GetSp500View");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
