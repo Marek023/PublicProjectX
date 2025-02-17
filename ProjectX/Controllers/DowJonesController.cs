@@ -24,7 +24,7 @@ public class DowJonesController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in Sp500");
+            _logger.LogError(ex, "Error in GetDowJonesView");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
     }
