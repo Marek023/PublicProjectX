@@ -26,7 +26,7 @@ public class NasdaqController : Controller
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in Nasdaq");
+            _logger.LogError(ex, "Error in GetNasdaqView");
             return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
         }
         
