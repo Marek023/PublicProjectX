@@ -50,7 +50,7 @@ public class Worker : BackgroundService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in ExecuteAsync");
-            throw new Exception("Error in ExecuteAsync");
+           
         }
     }
 }
