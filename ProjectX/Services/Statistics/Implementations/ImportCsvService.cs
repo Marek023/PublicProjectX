@@ -21,12 +21,7 @@ public class ImportCsvService : IImportCsvService
             dividendHistoryModels,
             depositHistoryModels,
             nonTradingAmount);
-
-        // měsíční data jsou hotové ted se musi přepočítat po měsících a vložit do ročního modelu
-        // pak spočítat i totalYear
-        
-        Console.WriteLine("xx");
-        
+            //dodělat
     }
 
     private List<AccountHistoryModel> GetAccountHistoryModels(IFormFile accountHistory)
